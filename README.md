@@ -6,3 +6,9 @@ ________
 
 **Miro Board**
 https://miro.com/welcomeonboard/OEF6KzlTdTFQSExSTzIzMXlJVVdFVFdMSjRtMUk3bUVyZzg4STRtRmNFbmNhUWhVaFR1ZnEwWUJBYlEyNG4yK3ZtQ3hvbUhOWnJMVVp0MmFJU3hINGZhL0JZU0RieXR4Y1BYVUJEL0NkV3NnT29ZSWxEb3NPZzhSV2tYMzY2dXZnbHpza3F6REdEcmNpNEFOMmJXWXBBPT0hdjE=?share_link_id=758448731078
+
+_________
+
+**Docs dokument**
+
+https://docs.google.com/document/d/1DVXjBo6uyH5UvqzH_0_LMoRm0q0qhRAKM3bN8yUTgw0/edit?usp=sharing
