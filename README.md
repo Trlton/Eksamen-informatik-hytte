@@ -1,1 +1,6 @@
 
+**Trello**
+https://trello.com/invite/b/69c11181511c2a5a66fe196b/ATTI52c34dee952872967243a1c92e06015dA158B9BF/eksamen-informatik-rasnoah
+
+**Miro Board**
+https://miro.com/welcomeonboard/OEF6KzlTdTFQSExSTzIzMXlJVVdFVFdMSjRtMUk3bUVyZzg4STRtRmNFbmNhUWhVaFR1ZnEwWUJBYlEyNG4yK3ZtQ3hvbUhOWnJMVVp0MmFJU3hINGZhL0JZU0RieXR4Y1BYVUJEL0NkV3NnT29ZSWxEb3NPZzhSV2tYMzY2dXZnbHpza3F6REdEcmNpNEFOMmJXWXBBPT0hdjE=?share_link_id=758448731078
