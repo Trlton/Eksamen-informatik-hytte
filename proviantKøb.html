@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8" />
+  <title>Proviant køb</title>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #fff;
+      color: #111;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+    }
+
+    a.tilbage {
+      text-decoration: none;
+      color: #111;
+      font-size: 1rem;
+      font-weight: 500;
+      border: 2px solid #123;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      background: #e6f2ee;
+    }
+
+    a.tilbage:hover {
+      background: #96b3a8;
+      border-color: #111;
+      color: #fff;
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      margin: 2rem 0 1.5rem;
+    }
+
+    .layout {
+      display: flex;
+      gap: 4rem;
+      align-items: flex-start;
+    }
+
+    table {
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 1rem 1.5rem;
+      text-align: left;
+      border-bottom: 1px solid #111;
+    }
+
+    
+
+    input[type="number"] {
+      width: 65px;
+      padding: 0.3rem 0.5rem;
+      font-family: 'Inter', sans-serif;
+      border: 2px solid #ddd;
+      border-radius: 5px;
+      background: #e6f2ee;
+    }
+
+    #summary-lines {
+      color: #444;
+      margin-bottom: 1.2rem;
+    }
+
+    #total {
+      font-size: 1.2rem;
+      padding-top: 1rem;
+      border-top: 2px solid #123;
+    }
+
+    a.betal {
+      display: inline-flex;
+      align-items: center;
+      background: #e6f2ee;
+      color: #111;
+      text-decoration: none;
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      border: 2px solid #123;
+
+    }
+
+    a.betal:hover {
+      background: #96b3a8;
+      border-color: #111;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  
+  <a class="tilbage" href="home.html">Tilbage</a>
+  <h1>Proviant køb</h1>
+
+  <div class="layout">
+
+    <table>
+      <thead>
+        <tr>
+          <th>Pris</th>
+          <th>Vare</th>
+          <th>Antal</th>
+        </tr>
+      </thead>
+      <tbody id="food-table"></tbody>
+    </table>
+    <div class="summary">
+      <h2>Total</h2>
+      <div id="summary-lines"></div>
+      <div id="total">0 DKK</div> 
+      <a class="betal" href="betalingPlaceholder.html">Gå til betaling</a>
+    </div>
+
+  </div>
+
+  <script>
+
+	// Indsæt bare flere rækker hvis det er
+    const items = [
+      { name: "Dåse makrel", price: 25 },
+      { name: "Dåse tun", price: 20 },
+      { name: "CocaCola", price: 15 },
+      { name: "Naturgas", price: 100 },
+      { name: "Whatever", price: 0 }
+    ];
+
+    // 
+    const tbody = document.getElementById("food-table");
+    const antal = new Array(items.length).fill(0);
+
+    items.forEach((item, i) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${item.price} kr</td>
+        <td>${item.name}</td>
+        <td><input type="number" min="0" value="0" data-i="${i}" /></td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    // Holder øje med opdateringer i liste (altså antal af en vare)
+    
+    tbody.addEventListener("input", e => {
+      const i = +e.target.dataset.i;
+      antal[i] = Math.max(0, parseInt(e.target.value) || 0);
+      e.target.value = antal[i];
+
+      let htmlLines = [];
+      let totalSum = 0;
+      
+	// Summerer prisen af genstandende/varene
+      items.forEach((item, index) => {
+        const amount = antal[index];
+        if (amount > 0) {
+          const lineTotal = item.price * amount;
+          htmlLines.push(`${item.name} × ${amount} = ${lineTotal} kr`);
+          totalSum += lineTotal;
+        }
+      });
+
+      document.getElementById("summary-lines").innerHTML = htmlLines.join("<br>");
+      document.getElementById("total").textContent = totalSum + " DKK";
+    });
+  </script>
+
+</body>
+</html>
