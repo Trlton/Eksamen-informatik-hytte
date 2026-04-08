@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <title>Betaling</title>
+  <style>
+    body {
+      font-family: sans-serif;
+    }
+  </style>
+</head>
+<body>
+
+  <a href="proviantKøb.html"> Tilbage</a>
+  <h1>Betaling</h1>
+  <p id="beløb">0 DKK</p>
+
+  <script>
+    const total = localStorage.getItem("totalSum");
+    document.getElementById("beløb").textContent = total + " DKK";
+  </script>
+
+</body>
+</html>
