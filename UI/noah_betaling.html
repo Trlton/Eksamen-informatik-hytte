@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <title>Betaling</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 2rem;
+    }
+
+    button {
+      margin-top: 1rem;
+      padding: 0.8rem 1.2rem;
+      cursor: pointer;
+    }
+
+    #status {
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <a href="proviantKøb.html"> Tilbage</a>
+  <a href="proviantKøb.html">Tilbage</a>
+  <h1>Betaling</h1>
+
+  <p id="beløb">0 DKK</p>
+
+  <label for="betalingsType">Betalingsmetode:</label>
+  <select id="betalingsType">
+    <option value="kort">Kort</option>
+    <option value="DNT-app">DNT-app</option>
+  </select>
+
+  <br>
+  <button onclick="bekræftBetaling()">Bekræft betaling</button>
+
+  <p id="status"></p>
+
+  <script>
+    const total = localStorage.getItem("totalSum");
+    const total = Number(localStorage.getItem("totalSum") || 0);
+    document.getElementById("beløb").textContent = total + " DKK";
+
+    async function bekræftBetaling() {
+      const varer = JSON.parse(localStorage.getItem("valgteVarer") || "[]");
+      const total = Number(localStorage.getItem("totalSum") || 0);
+      const betalingsType = document.getElementById("betalingsType").value;
+
+      if (varer.length === 0 || total <= 0) {
+        document.getElementById("status").textContent = "Ingen varer fundet.";
+        return;
+      }
+
+      try {
+        const response = await fetch("/api/fuldfor_proviant_køb", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            varer: varer,
+            total: total,
+            betalings_type: betalingsType,
+            status: "gennemført"
+          })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          document.getElementById("status").textContent = result.message || "Fejl ved gemning.";
+          return;
+        }
+
+        document.getElementById("status").textContent = "Betaling og køb er gemt.";
+
+        localStorage.removeItem("totalSum");
+        localStorage.removeItem("valgteVarer");
+
+        setTimeout(() => {
+          window.location.href = "home.html";
+        }, 1500);
+
+      } catch (error) {
+        document.getElementById("status").textContent = "Kunne ikke kontakte serveren.";
+      }
+    }
+  </script>
+
+</body>
