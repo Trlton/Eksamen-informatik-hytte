@@ -17,14 +17,15 @@ def index():
 def static_files(htmlFil):
     return send_from_directory("UI", htmlFil)
 
-@app.route("/api/fuldfor_proviant_køb", methods=["POST"])
-def fuldfor_proviant_køb():
+#skriv kode-forklaring af json-kode/gemmer senere
+@app.route("/api/proviant/betal", methods=["POST"])
+def gem_proviant_betaling():
     data = request.get_json()
 
     varer = data.get("varer", [])
     total = data.get("total", 0)
-    betalings_type = data.get("betalings_type", "ukendt")
-    status = data.get("status", "gennemført")
+    kunde = data.get("kunde", {})
+    betaling = data.get("betaling", {})
 
     if not varer:
         return jsonify({"message": "Ingen varer modtaget"}), 400
@@ -32,14 +33,31 @@ def fuldfor_proviant_køb():
     if total <= 0:
         return jsonify({"message": "Total skal være større end 0"}), 400
 
-    køb = tilføj_proviant_køb(varer, total)
-    betaling = tilføj_betaling(betalings_type, total, status)
+    køb_data = {
+        "kunde": kunde,
+        "varer": varer
+    }
+
+    gemt_køb = tilføj_proviant_køb(køb_data, total)
+    gemt_betaling = tilføj_betaling(
+        betaling.get("type", "kort"),
+        total,
+        betaling.get("status", "gennemført")
+    )
 
     return jsonify({
-        "message": "Køb og betaling gemt",
-        "køb": køb,
-        "betaling": betaling
+        "message": "køb gemt",
+        "køb": gemt_køb,
+        "betaling": gemt_betaling
     }), 200
+
+
+if __name__ == "__main__":
+    sørg_data_fil()
+    import webbrowser
+
+    webbrowser.open("http://localhost:5000")
+    app.run(debug=True)
 
 @app.route("/api/registrering", methods=["POST"])
 def gem_registrering():

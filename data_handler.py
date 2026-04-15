@@ -41,11 +41,11 @@ def tilføj_registrering(navn, mobil, ankomst, afrejse, antal_personer):
     skriv_data(data)
     return ny_registrering
 
-def tilføj_proviant_køb(varer, total):
+def tilføj_proviant_køb(vare, total):
     data = læs_data()
     nyt_køb = {
         "id": len(data["proviant_køb"]) + 1,
-        "varer": varer,
+        "køb_info": vare,
         "total": total,
         "oprettet": datetime.now().isoformat()
     }

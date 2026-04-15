@@ -53,8 +53,6 @@
         border-bottom: 1px solid #111;
       }
 
-
-
       input[type="number"] {
         width: 65px;
         padding: 0.3rem 0.5rem;
@@ -129,7 +127,7 @@
         { name: "Dåse tun", price: 20 },
         { name: "CocaCola", price: 15 },
         { name: "Naturgas", price: 100 },
-        { name: "Whatever", price: 0 }
+        { name: "Whatever", price: 1 }
       ];
 
       const tbody = document.getElementById("food-table");
@@ -169,8 +167,30 @@
         document.getElementById("total").textContent = totalSum + " DKK";
       });
 
-      function gåTilBetaling() {
-        localStorage.setItem("totalSum", totalSum);
-        window.location.href = "betaling.html";
+
+  function gåTilBetaling() {
+    const valgteVarer = [];
+
+    items.forEach((item, index) => {
+      const amount = antal[index];
+      if (amount > 0) {
+        valgteVarer.push({
+          vare: item.name,
+          antal: amount,
+          pris_pr_stk: item.price,
+          linje_total: item.price * amount
+        });
       }
-    </script>
+    });
+
+    if (valgteVarer.length === 0) {
+      alert("Vælg mindst én vare først.");
+      return;
+    }
+
+    localStorage.setItem("proviant_varer", JSON.stringify(valgteVarer));
+    localStorage.setItem("proviant_total", totalSum);
+
+    window.location.href = "betaling.html";
+  }
+</script>

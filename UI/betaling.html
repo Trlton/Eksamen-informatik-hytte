@@ -24,15 +24,72 @@
 
 
 
-  <button onclick="gem()">Bekræft betaling (no function)</button>
+  <button onclick="bekræftBetaling()">Bekræft betaling</button>
 
-
-
+  <p id="status"></p>
 
   <script>
-    const total = localStorage.getItem("totalSum");
+    const total = Number(localStorage.getItem("proviant_total") || 0);
     document.getElementById("beløb").textContent = total + " DKK";
+
+    async function bekræftBetaling() {
+      const varer = JSON.parse(localStorage.getItem("proviant_varer") || "[]");
+      const total = Number(localStorage.getItem("proviant_total") || 0);
+
+      const navn = document.getElementById("navn").value.trim();
+      const email = document.getElementById("email").value.trim();
+
+      if (varer.length === 0 || total <= 0) {
+        document.getElementById("status").textContent = "Ingen varer fundet.";
+        return;
+      }
+
+      if (!navn || !email) {
+        document.getElementById("status").textContent = "Udfyld navn og email.";
+        return;
+      }
+
+      try {
+        const response = await fetch("/api/proviant/betal", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            varer: varer,
+            total: total,
+            kunde: {
+              navn: navn,
+              email: email
+            },
+            betaling: {
+              type: "kort",
+              status: "gennemført"
+            }
+          })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          document.getElementById("status").textContent = result.message || "Fejl ved gemning.";
+          return;
+        }
+
+        document.getElementById("status").textContent = "Køb gemt.";
+
+        localStorage.removeItem("proviant_varer");
+        localStorage.removeItem("proviant_total");
+
+        setTimeout(() => {
+          window.location.href = "home.html";
+        }, 1200);
+
+      } catch (error) {
+        document.getElementById("status").textContent = "Kunne ikke kontakte serveren.";
+      }
+    }
   </script>
 
-</body>
+        </body>
 </html>
