@@ -1,4 +1,9 @@
 from flask import Flask, send_from_directory, request, jsonify
+import time
+import random
+import threading
+
+import data_handler
 from data_handler import (
     sørg_data_fil,
     tilføj_proviant_køb,
@@ -8,6 +13,7 @@ from data_handler import (
 )
 
 app = Flask(__name__)
+
 
 @app.route("/")
 def index():
@@ -51,8 +57,15 @@ def gem_proviant_betaling():
         "betaling": gemt_betaling
     }), 200
 
+def sync_loop():
+    while True:
+        wait_time = random.randint(20,60)
+        time.sleep(wait_time)
+        data_handler.simuler_internetstatus()
+        data_handler.send_ventende_data()
 
 if __name__ == "__main__":
+    threading.Thread(target=sync_loop, daemon=True).start()
     sørg_data_fil()
     import webbrowser
 
