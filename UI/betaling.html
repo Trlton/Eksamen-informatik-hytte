@@ -1,95 +1,287 @@
 <!DOCTYPE html>
 <html lang="da">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Betaling</title>
   <style>
-    body { font-family: sans-serif; }
-    input { display: block ; padding: 0.5rem; font-size: 1rem; }
-    button { padding: 0.5rem 1rem; font-size: 1rem; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      padding: 2rem;
+      color: #333;
+    }
+
+    .page-wrapper {
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
+
+    }
+
+    /* Tilbage-knap */
+    .tilbage-btn {
+      display: inline-block;
+      background: #5b6e8a;
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      margin-bottom: 2rem;
+    }
+    .tilbage-btn:hover {
+      background: #4a5c76;
+    }
+
+    /* Layout */
+    .layout {
+      display: flex;
+      gap: 3rem;
+      align-items: flex-start;
+    }
+
+    .left-col {
+      flex: 1;
+    }
+
+    .right-col {
+      width: 250px;
+      flex-shrink: 0;
+    }
+
+    /* Sektioner */
+    .section-label {
+      font-weight: bold;
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+      color: #000;
+    }
+
+    /* Bokse */
+    .info-box, .payment-box {
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .field-label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .info-box .field-label:first-child,
+    .payment-box .field-label:first-child {
+      margin-top: 0;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 0.5rem;
+      font-size: 1rem;
+      outline: none;
+    }
+    input[type="text"]:focus {
+      border-color: #3b5998;
+    }
+
+    .card-inner {
+      background: #f1f3f4;
+      border-radius: 4px;
+      padding: 1.5rem;
+    }
+
+    .card-row {
+      display: flex;
+      gap: 1rem;
+    }
+    .card-row .field-group {
+      flex: 1;
+    }
+
+    /* Submit knap */
+    .submit-btn {
+      display: inline-block;
+      background: #3b5998;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 0.75rem 1.5rem;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      width: 100%;
+    }
+    .submit-btn:hover {
+      background: #2d4a7a;
+    }
+
+    /* Status besked */
+    #status {
+      margin-top: 1rem;
+      color: #d32f2f;
+      font-weight: bold;
+      text-align: center;
+      min-height: 1.5em;
+    }
+
+    /* Højre kolonne: Oversigt */
+    .oversigt-title {
+      font-weight: bold;
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+      color: #000;
+    }
+
+    .oversigt-line {
+      margin-bottom: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .oversigt-divider {
+      border: none;
+      border-top: 1px solid #ccc;
+      margin: 1rem 0;
+    }
+
+    .oversigt-total {
+      font-size: 1.1rem;
+      display: flex;
+      justify-content: space-between;
+    }
   </style>
 </head>
 <body>
 
-  <a href="proviantKøb.html"> Tilbage</a>
-  <h1>Betaling</h1>
-  <p id="beløb">0 DKK</p>
-  <h2>Personlige oplysninger<h2>
-  <input type="text"  id="navn"   placeholder="For- og efternavn" />
-  <input type="text"  id="email"  placeholder="Email" />
+<div class="page-wrapper">
+  <a class="tilbage-btn" href="proviantKøb.html">Tilbage</a>
 
-  <p> Kort oplysninger <p>
-  <input type="text"  id="kortNr"  placeholder="Kort nummer" />
-  <input type="text"  id="kortUdløb"  placeholder="Udløbsdato MM/ÅÅ" />
-  <input type="text"  id="kortKode"  placeholder="Sikkerhedskode" />
+  <div class="layout">
+    <div class="left-col">
+      <div class="section-label">Dine oplysninger</div>
+      <div class="info-box">
+        <label class="field-label" for="navn">For- og efternavn</label>
+        <input type="text" id="navn"/>
 
+        <label class="field-label" for="email">E-mail</label>
+        <input type="text" id="email" />
+      </div>
 
+      <div class="section-label">Betaling</div>
+      <div class="payment-box">
+        <div class="card-inner">
+          <label class="field-label" for="kortNr">Kortnummer</label>
+          <input type="text" id="kortNr" />
 
-  <button onclick="bekræftBetaling()">Bekræft betaling</button>
+          <div class="card-row">
+            <div class="field-group">
+              <label class="field-label" for="kortUdløb">Udløbsdato</label>
+              <input type="text" id="kortUdløb"  />
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="kortKode">Sikkerhedskode (CVC)</label>
+              <input type="text" id="kortKode" />
+            </div>
+          </div>
+        </div>
+      </div>
 
-  <p id="status"></p>
+      <button class="submit-btn" onclick="bekræftBetaling()">Gennemfør ordren og betal</button>
+      <p id="status"></p>
+    </div>
 
-  <script>
+    <div class="right-col">
+      <div class="oversigt-title">Oversigt</div>
+      <div id="oversigt-varer"></div>
+      <hr class="oversigt-divider" />
+      <div class="oversigt-total">
+        <strong>Total:</strong> <span id="beløb">0 kr.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const total = Number(localStorage.getItem("proviant_total") || 0);
+  document.getElementById("beløb").textContent = total + " kr.";
+
+  // Hent og render varer i oversigt
+  const varer = JSON.parse(localStorage.getItem("proviant_varer") || "[]");
+  const container = document.getElementById("oversigt-varer");
+
+  if (varer.length > 0) {
+    varer.forEach(v => {
+      const line = document.createElement("div");
+      line.className = "oversigt-line";
+      line.innerHTML = `<span>${v.antal}x ${v.navn}</span> <span>${v.pris * v.antal} kr.</span>`;
+      container.appendChild(line);
+    });
+  } else {
+    container.innerHTML = '<div class="oversigt-line">Ingen varer valgt</div>';
+  }
+
+  async function bekræftBetaling() {
+    const varer = JSON.parse(localStorage.getItem("proviant_varer") || "[]");
     const total = Number(localStorage.getItem("proviant_total") || 0);
-    document.getElementById("beløb").textContent = total + " DKK";
+    const navn = document.getElementById("navn").value.trim();
+    const email = document.getElementById("email").value.trim();
 
-    async function bekræftBetaling() {
-      const varer = JSON.parse(localStorage.getItem("proviant_varer") || "[]");
-      const total = Number(localStorage.getItem("proviant_total") || 0);
-
-      const navn = document.getElementById("navn").value.trim();
-      const email = document.getElementById("email").value.trim();
-
-      if (varer.length === 0 || total <= 0) {
-        document.getElementById("status").textContent = "Ingen varer fundet.";
-        return;
-      }
-
-      if (!navn || !email) {
-        document.getElementById("status").textContent = "Udfyld navn og email.";
-        return;
-      }
-
-      try {
-        const response = await fetch("/api/proviant/betal", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            varer: varer,
-            total: total,
-            kunde: {
-              navn: navn,
-              email: email
-            },
-            betaling: {
-              type: "kort",
-              status: "gennemført"
-            }
-          })
-        });
-
-        const result = await response.json();
-
-        if (!response.ok) {
-          document.getElementById("status").textContent = result.message || "Fejl ved gemning.";
-          return;
-        }
-
-        document.getElementById("status").textContent = "Køb gemt.";
-
-        localStorage.removeItem("proviant_varer");
-        localStorage.removeItem("proviant_total");
-
-        setTimeout(() => {
-          window.location.href = "home.html";
-        }, 1200);
-
-      } catch (error) {
-        document.getElementById("status").textContent = "Kunne ikke kontakte serveren.";
-      }
+    if (varer.length === 0 || total <= 0) {
+      document.getElementById("status").textContent = "Der er ingen varer i din kurv.";
+      return;
     }
-  </script>
 
-        </body>
+    if (!navn || !email) {
+      document.getElementById("status").textContent = "Udfyld venligst navn og e-mail.";
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/proviant/betal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          varer,
+          total,
+          kunde: { navn, email },
+          betaling: { type: "kort", status: "gennemført" }
+        })
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        document.getElementById("status").textContent = result.message || "Der opstod en fejl ved betalingen.";
+        return;
+      }
+
+      document.getElementById("status").style.color = "#2e7d32"; // Skift til grøn ved succes
+      document.getElementById("status").textContent = "Betaling godkendt! Viderestiller...";
+
+      localStorage.removeItem("proviant_varer");
+      localStorage.removeItem("proviant_total");
+
+      setTimeout(() => {
+        window.location.href = "home.html";
+      }, 1500);
+
+    } catch (error) {
+      document.getElementById("status").textContent = "Kunne ikke oprette forbindelse til serveren.";
+    }
+  }
+</script>
+</body>
 </html>
