@@ -9,11 +9,10 @@ from data_handler import (
     tilføj_proviant_køb,
     tilføj_betaling,
     tilføj_registrering,
-    hent_totaler
+    hent_totaler, send_ventende_data
 )
 
 app = Flask(__name__)
-
 
 @app.route("/")
 def index():
@@ -44,48 +43,35 @@ def gem_proviant_betaling():
         "varer": varer
     }
 
-    gemt_køb = tilføj_proviant_køb(køb_data, total)
+    gemt_køb = tilføj_proviant_køb(køb_data, varer, total)
     gemt_betaling = tilføj_betaling(
-        betaling.get("type", "kort"),
-        total,
-        betaling.get("status", "gennemført")
+        type_betaling=betaling.get("type", "kort"),
+        beløb=total,
+        status=betaling.get("status", "gennemført"),
+        kunde_id=gemt_køb["kunde_id"]
     )
 
     return jsonify({
-        "message": "køb gemt",
+        "message": "Køb gemt lokalt og sat i kø til sending",
         "køb": gemt_køb,
         "betaling": gemt_betaling
     }), 200
-
-def sync_loop():
-    while True:
-        wait_time = random.randint(20,60)
-        time.sleep(wait_time)
-        data_handler.simuler_internetstatus()
-        data_handler.send_ventende_data()
-
-if __name__ == "__main__":
-    threading.Thread(target=sync_loop, daemon=True).start()
-    sørg_data_fil()
-    import webbrowser
-
-    webbrowser.open("http://localhost:5000")
-    app.run(debug=True)
 
 @app.route("/api/registrering", methods=["POST"])
 def gem_registrering():
     data = request.get_json()
 
     registrering = tilføj_registrering(
-        navn=data["navn"],
-        mobil=data["mobil"],
+        navn=data["navn", ""],
+        mobil=data["mobil", ""],
+        email=data["email", ""],
         ankomst=data["ankomst"],
         afrejse=data["afrejse"],
         antal_personer=data["antal_personer"]
     )
 
     return jsonify({
-        "message": "Registrering gemt",
+        "message": "Registrering gemt lokalt, og sat i kø til sendelse",
         "registrering": registrering
     }), 200
 
@@ -93,8 +79,18 @@ def gem_registrering():
 def totaler():
     return jsonify(hent_totaler())
 
+def sync_loop():
+    while True:
+        wait_time = random.randint(20,60)
+        time.sleep(wait_time)
+
+        data_handler.simuler_internetstatus()
+        data_handler.send_ventende_data()
+
 if __name__ == "__main__":
     sørg_data_fil()
+    threading.Thread(target=sync_loop, daemon=True).start()
+
     import webbrowser
     webbrowser.open("http://localhost:5000")
     app.run(debug=True, use_reloader=False)
