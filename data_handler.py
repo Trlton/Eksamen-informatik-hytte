@@ -96,7 +96,7 @@ def tilføj_til_sendekø(data, type_navn, id):
     })
 
 
-def tilføj_registrering(navn, mobil, email, ankomst, afrejse, antal_personer):
+def tilføj_registrering(navn, email, ankomst, afrejse, antal_personer, mobil=""):
     data = læs_data()
 
     kunde = find_eller_opret_kunde(data, navn, mobil, email)
