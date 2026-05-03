@@ -62,12 +62,11 @@ def gem_registrering():
     data = request.get_json()
 
     registrering = tilføj_registrering(
-        navn=data["navn", ""],
-        mobil=data["mobil", ""],
-        email=data["email", ""],
-        ankomst=data["ankomst"],
-        afrejse=data["afrejse"],
-        antal_personer=data["antal_personer"]
+        navn=data.get("navn", ""),
+        email=data.get("email", ""),
+        ankomst=data.get("ankomst"),
+        afrejse=data.get("afrejse"),
+        antal_personer=data.get("antal_personer")
     )
 
     return jsonify({
