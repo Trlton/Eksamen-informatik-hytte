@@ -64,6 +64,7 @@ def gem_registrering():
     registrering = tilføj_registrering(
         navn=data.get("navn", ""),
         email=data.get("email", ""),
+        mobil=data.get("mobil", ""),
         ankomst=data.get("ankomst"),
         afrejse=data.get("afrejse"),
         antal_personer=data.get("antal_personer")
