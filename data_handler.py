@@ -6,7 +6,7 @@ from datetime import datetime
 DATA_DIR = "data"
 DATA_FILE = os.path.join(DATA_DIR, "hytte_data.json")
 
-internet_avaliable = False
+internet_available = False
 
 def sørg_data_fil():
     os.makedirs(DATA_DIR, exist_ok=True)
