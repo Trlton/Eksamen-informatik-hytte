@@ -178,6 +178,7 @@
 
         <label class="field-label" for="email">E-mail</label>
         <input type="text" id="email" />
+
       </div>
 
       <div class="section-label">Betaling</div>
@@ -234,52 +235,80 @@
   }
 
   async function bekræftBetaling() {
-    const varer = JSON.parse(localStorage.getItem("proviant_varer") || "[]");
-    const total = Number(localStorage.getItem("proviant_total") || 0);
+    // Hent brugeroplysninger
     const navn = document.getElementById("navn").value.trim();
     const email = document.getElementById("email").value.trim();
 
-    if (varer.length === 0 || total <= 0) {
-      document.getElementById("status").textContent = "Der er ingen varer i din kurv.";
-      return;
-    }
+    // Hent data fra localStorage
+    const varer = JSON.parse(localStorage.getItem("proviant_varer") || "[]");
+    const total = Number(localStorage.getItem("proviant_total") || localStorage.getItem("booking_total") || 0);
 
+    const ankomst = localStorage.getItem("ankomst");
+    const afrejse = localStorage.getItem("afgang");
+    const antal_personer = Number(localStorage.getItem("gaester") || 0);
+
+    // Validering af påkrævede felter
     if (!navn || !email) {
       document.getElementById("status").textContent = "Udfyld venligst navn og e-mail.";
       return;
     }
 
     try {
-      const response = await fetch("/api/proviant/betal", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          varer,
-          total,
-          kunde: { navn, email },
-          betaling: { type: "kort", status: "gennemført" }
-        })
-      });
+      document.getElementById("status").style.color = "#333";
+      document.getElementById("status").textContent = "Behandler...";
 
-      const result = await response.json();
+      // er det en proviant køb?
+      if (varer.length > 0 && total > 0) {
+        const resProviant = await fetch("/api/proviant/betal", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            varer,
+            total,
+            kunde: { navn, email },
+            betaling: { type: "kort", status: "gennemført" }
+          })
+        });
+        if (!resProviant.ok) throw new Error("Fejl ved køb af proviant.");
+      }
 
-      if (!response.ok) {
-        document.getElementById("status").textContent = result.message || "Der opstod en fejl ved betalingen.";
+      // eller er det en indtjeknig
+      else if (ankomst && afrejse) {
+        const resReg = await fetch("/api/registrering", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            navn: navn,
+            email: email,
+            ankomst: ankomst,
+            afrejse: afrejse,
+            antal_personer: antal_personer
+          })
+        });
+        if (!resReg.ok) throw new Error("Fejl ved gemning af registrering.");
+      }
+
+      // Hvis brugeren har skrevet selve url'en ind for some reason
+      else {
+        document.getElementById("status").style.color = "#d32f2f";
+        document.getElementById("status").textContent = "Ingen varer eller datoer valgt.";
         return;
       }
 
-      document.getElementById("status").style.color = "#2e7d32"; // Skift til grøn ved succes
-      document.getElementById("status").textContent = "Betaling godkendt! Viderestiller...";
+      // gemning stuff succes
+      document.getElementById("status").style.color = "#2e7d32";
+      document.getElementById("status").textContent = "Gennemført! Viderestiller...";
 
-      localStorage.removeItem("proviant_varer");
-      localStorage.removeItem("proviant_total");
+      // Ryd localStorage - så det klart til næste bruger
+      localStorage.clear();
 
       setTimeout(() => {
         window.location.href = "home.html";
       }, 1500);
 
     } catch (error) {
-      document.getElementById("status").textContent = "Kunne ikke oprette forbindelse til serveren.";
+      document.getElementById("status").style.color = "#d32f2f";
+      document.getElementById("status").textContent = "Serverfejl: " + error.message;
     }
   }
 </script>
