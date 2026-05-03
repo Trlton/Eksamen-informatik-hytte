@@ -244,6 +244,7 @@
   function justerGaester(d) {
     gaester = Math.max(1, gaester + d);
     document.getElementById("gaester-val").textContent = gaester;
+    opdaterTotal();
   }
 
   function dagKey(y, m, d) { return `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`; }
@@ -345,6 +346,10 @@
       alert("Vælg venligst ankomst- og afgangsdato.");
       return;
     }
+
+    localStorage.removeItem("proviant_varer");
+    localStorage.removeItem("proviant_total");
+    
     localStorage.setItem("ankomst", rangeStart);
     localStorage.setItem("afgang", rangeEnd);
     localStorage.setItem("gaester", gaester);
