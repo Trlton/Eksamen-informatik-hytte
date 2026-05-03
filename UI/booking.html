@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vælg datoer</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: sans-serif;
+      background: #fff;
+      padding: 2rem;
+    }
+
+    .tilbage-btn {
+      display: inline-block;
+      background: #5b6e8a;
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      padding: 0.3rem 0.8rem;
+      border-radius: 3px;
+      margin-bottom: 1.5rem;
+    }
+    .tilbage-btn:hover { background: #4a5c76; }
+
+    .layout {
+      display: flex;
+      gap: 2rem;
+      align-items: flex-start;
+    }
+
+    /* ── Calendar ── */
+    .kalender-wrapper {
+      border: 2px solid #3b6ecf;
+      border-radius: 10px;
+      padding: 1.5rem 2rem;
+      flex: 1;
+    }
+
+    .kalender-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.2rem;
+    }
+
+    .nav-btn {
+      background: none;
+      border: none;
+      font-size: 1.3rem;
+      cursor: pointer;
+      color: #333;
+      padding: 0 0.5rem;
+    }
+    .nav-btn:hover { color: #3b6ecf; }
+
+    .months {
+      display: flex;
+      gap: 3rem;
+      flex: 1;
+      justify-content: space-around;
+    }
+
+    .month { flex: 1; }
+
+    .month-title {
+      text-align: center;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 0.2rem;
+      text-align: center;
+    }
+
+    .day-header {
+      font-weight: 600;
+      color: #555;
+      padding: 0.3rem 0;
+    }
+
+    .day {
+      padding: 0.45rem 0;
+      border-radius: 5px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .day:hover:not(.empty) { background: #e8f0ff; }
+
+    .day.empty { cursor: default; }
+
+    .day.in-range { background: #dce8ff; }
+    .day.range-start, .day.range-end {
+      background: #3b6ecf;
+      color: #fff;
+      border-radius: 5px;
+    }
+
+    /* ── Right sidebar ── */
+    .sidebar {
+      width: 260px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .total-box, .gaester-box {
+      border: 1.5px solid #ccc;
+      border-radius: 12px;
+      padding: 1.2rem 1.4rem;
+    }
+
+    .total-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.6rem;
+    }
+
+    .total-line {
+      color: #444;
+      margin-bottom: 0.5rem;
+    }
+
+    .total-divider {
+      border: none;
+      border-top: 1.5px solid #ccc;
+      margin: 0.6rem 0;
+    }
+
+    .total-sum {
+      font-weight: 600;
+    }
+
+    /* Gæster */
+    .gaester-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .gaester-label { font-weight: 500; }
+
+    .counter {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+    }
+
+    .counter-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 1.5px solid #888;
+      background: none;
+      font-size: 1.1rem;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #333;
+    }
+    .counter-btn:hover { border-color: #333; }
+
+    .counter-val { min-width: 1.2rem; text-align: center; }
+
+    .indtjek-btn {
+      width: 100%;
+      background: #44a67c;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.85rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 0.8rem;
+    }
+    .indtjek-btn:hover { background: #44a67c; }
+  </style>
+</head>
+<body>
+
+  <a class="tilbage-btn" href="home.html" onclick="localStorage.clear()">Tilbage</a>
+
+  <h2 style="color:#3b6ecf; margin-bottom:1rem;">Vælg ankomst og afgang</h2>
+
+  <div class="layout">
+    <!-- Calendar -->
+    <div class="kalender-wrapper">
+      <div class="kalender-header">
+        <button class="nav-btn" onclick="skift(-1)">&#8249;</button>
+        <div class="months" id="months"></div>
+        <button class="nav-btn" onclick="skift(1)">&#8250;</button>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="total-box">
+        <div class="total-title">Total</div>
+        <div id="total-linjer"></div>
+        <hr class="total-divider" />
+        <div class="total-sum" id="total-sum">"&lt;Total pris&gt;" DKK</div>
+      </div>
+
+      <div class="gaester-box">
+        <div class="gaester-row">
+          <span class="gaester-label">Gæster</span>
+          <div class="counter">
+            <button class="counter-btn" onclick="justerGaester(-1)">−</button>
+            <span class="counter-val" id="gaester-val">1</span>
+            <button class="counter-btn" onclick="justerGaester(1)">+</button>
+          </div>
+        </div>
+        <button class="indtjek-btn" onclick="gaaTilIndtjek()">Indtjek</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const DA_MONTHS = ["Januar","Februar","Marts","April","Maj","Juni","Juli","August","September","Oktober","November","December"];
+  const DA_DAYS   = ["M","T","O","T","F","L","S"];
+
+  let visYear  = 2026;
+  let visMonth = 6; // 0-indexed, 6 = Juli
+  let gaester  = 1;
+  let rangeStart = null;
+  let rangeEnd   = null;
+
+  function skift(dir) {
+    visMonth += dir;
+    if (visMonth > 11) { visMonth = 0; visYear++; }
+    if (visMonth < 0)  { visMonth = 11; visYear--; }
+    render();
+  }
+
+  function justerGaester(d) {
+    gaester = Math.max(1, gaester + d);
+    document.getElementById("gaester-val").textContent = gaester;
+  }
+
+  function dagKey(y, m, d) { return `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`; }
+
+  function klikDag(key) {
+    if (!rangeStart || (rangeStart && rangeEnd)) {
+      rangeStart = key;
+      rangeEnd   = null;
+    } else {
+      if (key < rangeStart) { rangeEnd = rangeStart; rangeStart = key; }
+      else                  { rangeEnd = key; }
+    }
+    render();
+    opdaterTotal();
+  }
+
+  function buildMonth(year, month) {
+    const div = document.createElement("div");
+    div.className = "month";
+
+    const title = document.createElement("div");
+    title.className = "month-title";
+    title.textContent = DA_MONTHS[month] + " " + year;
+    div.appendChild(title);
+
+    const grid = document.createElement("div");
+    grid.className = "cal-grid";
+
+    // Day headers
+    DA_DAYS.forEach(d => {
+      const h = document.createElement("div");
+      h.className = "day-header";
+      h.textContent = d;
+      grid.appendChild(h);
+    });
+
+    const firstDay = new Date(year, month, 1).getDay(); // 0=Sun
+    const startOffset = (firstDay === 0) ? 6 : firstDay - 1; // Mon=0
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    for (let i = 0; i < startOffset; i++) {
+      const empty = document.createElement("div");
+      empty.className = "day empty";
+      grid.appendChild(empty);
+    }
+
+    for (let d = 1; d <= daysInMonth; d++) {
+      const key = dagKey(year, month + 1, d);
+      const cell = document.createElement("div");
+      cell.className = "day";
+      cell.textContent = d;
+
+      if (key === rangeStart) cell.classList.add("range-start");
+      else if (key === rangeEnd) cell.classList.add("range-end");
+      else if (rangeStart && rangeEnd && key > rangeStart && key < rangeEnd) cell.classList.add("in-range");
+
+      cell.addEventListener("click", () => klikDag(key));
+      grid.appendChild(cell);
+    }
+
+    div.appendChild(grid);
+    return div;
+  }
+
+  function render() {
+    const container = document.getElementById("months");
+    container.innerHTML = "";
+
+    const m2Year  = visMonth === 11 ? visYear + 1 : visYear;
+    const m2Month = visMonth === 11 ? 0 : visMonth + 1;
+
+    container.appendChild(buildMonth(visYear, visMonth));
+    container.appendChild(buildMonth(m2Year, m2Month));
+  }
+
+  function opdaterTotal() {
+    const linjer = document.getElementById("total-linjer");
+    const sum    = document.getElementById("total-sum");
+
+    const varer = JSON.parse(localStorage.getItem("proviant_varer") || "[]");
+    const total = Number(localStorage.getItem("proviant_total") || 0);
+
+    if (varer.length > 0) {
+      linjer.innerHTML = varer.map(v =>
+        `<div class="total-line">${v.navn} x ${v.antal} = ${v.pris * v.antal} kr</div>`
+      ).join("");
+      sum.textContent = total + " DKK";
+    } else {
+      linjer.innerHTML = `<div class="total-line">"&lt;pris&gt;" x "&lt;antal&gt;" = pris</div>`;
+      sum.textContent = '"<Total pris>" DKK';
+    }
+  }
+
+  function gaaTilIndtjek() {
+    if (!rangeStart || !rangeEnd) {
+      alert("Vælg venligst ankomst- og afgangsdato.");
+      return;
+    }
+    localStorage.setItem("ankomst", rangeStart);
+    localStorage.setItem("afgang", rangeEnd);
+    localStorage.setItem("gaester", gaester);
+    window.location.href = "betaling.html";
+  }
+
+  render();
+  opdaterTotal();
+</script>
+</body>
+</html>
