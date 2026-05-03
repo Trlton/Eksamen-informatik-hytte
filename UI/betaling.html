@@ -215,7 +215,7 @@
 </div>
 
 <script>
-  const total = Number(localStorage.getItem("proviant_total") || 0);
+  const total = Number(localStorage.getItem("proviant_total") || localStorage.getItem("booking_total") || 0);
   document.getElementById("beløb").textContent = total + " kr.";
 
   // Hent og render varer i oversigt
