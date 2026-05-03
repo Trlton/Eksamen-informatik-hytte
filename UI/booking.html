@@ -322,18 +322,21 @@
   function opdaterTotal() {
     const linjer = document.getElementById("total-linjer");
     const sum    = document.getElementById("total-sum");
+    const pris   = 200; // prissætning pr nat
 
-    const varer = JSON.parse(localStorage.getItem("proviant_varer") || "[]");
-    const total = Number(localStorage.getItem("proviant_total") || 0);
+    if (rangeStart && rangeEnd) {
+      // antal nætter
+      const naetter = Math.ceil(Math.abs(new Date(rangeEnd) - new Date(rangeStart)) / (1000 * 60 * 60 * 24));
+      const total   = naetter * gaester * pris;
 
-    if (varer.length > 0) {
-      linjer.innerHTML = varer.map(v =>
-        `<div class="total-line">${v.navn} x ${v.antal} = ${v.pris * v.antal} kr</div>`
-      ).join("");
+      linjer.innerHTML = `<div class="total-line">(${pris} kr x ${gaester} pers.) x ${naetter} nætter</div>`;
       sum.textContent = total + " DKK";
+
+      localStorage.setItem("booking_total", total);
     } else {
-      linjer.innerHTML = `<div class="total-line">"&lt;pris&gt;" x "&lt;antal&gt;" = pris</div>`;
-      sum.textContent = '"<Total pris>" DKK';
+      linjer.innerHTML = `<div class="total-line">Vælg datoer i kalenderen</div>`;
+      sum.textContent = '0 DKK';
+      localStorage.removeItem("booking_total");
     }
   }
 
